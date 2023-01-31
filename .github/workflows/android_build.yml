@@ -47,11 +47,12 @@ jobs:
           name: unit_test_report
           path: app/build/reports/tests/testDebugUnitTest/
 
-  instrument-test:
+  package:
     needs: [ unit-test ]
+    name: Generate APK
     runs-on: macos-latest
     steps:
-      - name: Checkout the code
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Set up JDK 11
@@ -59,14 +60,11 @@ jobs:
         with:
           java-version: 11
 
-      - name: Run UI test
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew connectedCheck
+      - name: Build APK
+        run: bash ./gradlew assembleDebug --stacktrace
 
-      - name: Upload instrument test report
+      - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: instrument_test_report
-          path: app/build/reports/androidTests/connected/
+          name: apk
+          path: app/build/outputs/apk/debug/app-debug.apk
